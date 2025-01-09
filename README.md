@@ -75,7 +75,7 @@ Use the Replit IDE to develop the app.
 * Access this code as a [Replit project](https://replit.com/@sidmaestre/verizon-workshop-python-flask).
 * Fork the Replit project into your account.
 * Set the 4 environment variables in the Replit IDE. Go to the **All Tools Panel** and click on **Secrets**.
-* Add the following 4 environment variables: CLIENT_ID, CLIENT_SECRET, UWS_USERNAME, UWS_PASSWORD.
+* Add the following 4 environment variables: VERIZON_CLIENT_ID, VERIZON_CLIENT_SECRET, UWS_USERNAME, UWS_PASSWORD.
 * Run the project.
 
 You can access the app at the URL provided by Replit.
