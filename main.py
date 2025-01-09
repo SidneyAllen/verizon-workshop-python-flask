@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from verizon.models.custom_fields_update_request import CustomFieldsUpdateRequest
 from verizon.models.custom_fields import CustomFields
+from verizon.models.carrier_deactivate_request import CarrierDeactivateRequest
 from verizon.models.account_device_list_request import AccountDeviceListRequest
 from verizon.models.account_device_list_result import AccountDeviceListResult
 from verizon.models.account_details import AccountDetails
@@ -311,9 +312,7 @@ def get_device_info():
 
     return render_template('index.html', data=data)
 
-
-
-# Route example
+# Route to update device custom field
 @app.route('/update-device-custom-field', methods=['GET'])
 def update_device_custom_field():
     global client, device_id, device_kind
@@ -348,6 +347,43 @@ def update_device_custom_field():
 
     try:
         result = device_management_controller.update_devices_custom_fields(body)
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+# Route to deactivate device
+@app.route('/deactivate-device', methods=['GET'])
+def deactivate_device():
+    global client, device_id, device_kind, account_name
+    data = {
+        "action": "Deactivate Device",
+    }
+    
+    client = _initialize_client()
+    device_management_controller = client.device_management
+    body = CarrierDeactivateRequest(
+        account_name=account_name,
+        devices=[
+            AccountDeviceList(
+                device_ids=[
+                    DeviceId(
+                        id=device_id,
+                        kind=device_kind
+                    )
+                ]
+            )
+        ],
+        reason_code='FF',
+        etf_waiver=True,
+        delete_after_deactivation=True
+    )
+
+    try:
+        result = device_management_controller.deactivate_service_for_devices(body)
         data["items"] = result.text
     except ConnectivityManagementResultException as e: 
         data["items"] = "Connectivity Management Exception! " + e.reason

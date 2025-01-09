@@ -50,10 +50,10 @@ pip install -r requirements.txt
 Create a file called .env in the root of the project. Add the following environment variables:
 
 ```
-CLIENT_ID=
-CLIENT_SECRET=
-UWS_USERNAME=
-UWS_PASSWORD=
+VERIZON_CLIENT_ID="YOUR_CLIENT_ID"
+VERIZON_CLIENT_SECRET="YYOUR_CLIENT_SECRET"
+UWS_USERNAME="YOUR_USERNAME"
+UWS_PASSWORD = "YOUR_PASSWORD"
 ```
 
 For the workshop, I'll share my credentials with you via email, but in a real-world scenario, you would need to create an app in the Verizon Developer Platform and get your own credentials.
