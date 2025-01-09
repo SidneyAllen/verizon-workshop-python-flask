@@ -4,6 +4,8 @@ import base64
 from dotenv import load_dotenv
 
 from flask import Flask, render_template, request, redirect, url_for, jsonify
+from verizon.models.custom_fields_update_request import CustomFieldsUpdateRequest
+from verizon.models.custom_fields import CustomFields
 from verizon.models.account_device_list_request import AccountDeviceListRequest
 from verizon.models.account_device_list_result import AccountDeviceListResult
 from verizon.models.account_details import AccountDetails
@@ -29,8 +31,8 @@ load_dotenv()
 
 client_id = os.getenv("VERIZON_CLIENT_ID")
 client_secret = os.getenv("VERIZON_CLIENT_SECRET")
-uws_username = os.getenv("UWS_USERNAME")
-uws_password = os.getenv("UWS_PASSWORD")
+username = os.getenv("UWS_USERNAME")
+password = os.getenv("UWS_PASSWORD")
 
 # Initialize global variables (you can set these dynamically based on your requirements)
 account_name = "0942080249-00001"
@@ -209,11 +211,12 @@ def end_session():
 # Route to activate device
 @app.route('/activate-device', methods=['GET'])
 def activate_device():
-    global client, device_id, device_kind, service_plan, mdn_zip_code, account_name, sku_number
+    global device_id, device_kind, service_plan, mdn_zip_code, account_name, sku_number
     data = {
         "action": "Acitivate Device",
     }
     
+    client = _initialize_client()
     device_management_controller = client.device_management
 
     body = CarrierActivateRequest(
@@ -265,26 +268,22 @@ def activate_device():
 # Route to list service plans
 @app.route('/get-service-plans', methods=['GET'])
 def get_service_plans():
-    global client, account_name
+    global account_name
     data = {
         "action": "List Service Plans",
     }
 
-    if account_name:
-        service_plans_controller = client.service_plans
-        try:
-            result = service_plans_controller.list_account_service_plans(account_name)
-            data["items"] = result.text
-        except ConnectivityManagementResultException as e: 
-            data["items"] = "Connectivity Management Exception! " + e.reason
-            return render_template('index.html', data=data)
-        except APIException as e: 
-            data["items"] = "API Exception! " + e.reason
-            return render_template('index.html', data=data)
-        return render_template('index.html', data=data)
-    else:
-        data["items"] = "Error! " + e.reason
-        return render_template('index.html', data=data)
+    client = _initialize_client()
+    service_plans_controller = client.service_plans
+    try:
+        result = service_plans_controller.list_account_service_plans(account_name)
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e: 
+        data["items"] = "API Exception! " + e.reason
+    return render_template('index.html', data=data)
+
 
 # Route to list device info
 @app.route('/get-device-info', methods=['GET'])
@@ -293,28 +292,90 @@ def get_device_info():
     data = {
         "action": "List Device Information",
     }
-    
-    if device_id and device_kind:
-        device_management_controller = client.device_management
-        body = AccountDeviceListRequest(
-            device_id=DeviceId(
-                id=device_id,
-                kind=device_kind
-            )
+
+    client = _initialize_client()
+    device_management_controller = client.device_management
+    body = AccountDeviceListRequest(
+        device_id=DeviceId(
+            id=device_id,
+            kind=device_kind
         )
-        try:
-            result = device_management_controller.list_devices_information(body)
-            data["items"] = result.text
-        except ConnectivityManagementResultException as e: 
-            data["items"] = "Connectivity Management Exception! " + e.reason
-            return render_template('index.html', data=data)
-        except APIException as e:
-            data["items"] = "API Exception! " + e.reason
-            return render_template('index.html', data=data) 
-        return render_template('index.html', data=data), 200
-    else:
-        data["items"] = "Bad Request! " + e.reason
-        return render_template('index.html', data=data)
+    )
+    try:
+        result = device_management_controller.list_devices_information(body)
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data)
+
+
+
+# Route example
+@app.route('/update-device-custom-field', methods=['GET'])
+def update_device_custom_field():
+    global client, device_id, device_kind
+    data = {
+        "action": "Update Device Custom Field",
+    }
+    
+    client = _initialize_client()
+    device_management_controller = client.device_management
+    body = CustomFieldsUpdateRequest(
+        custom_fields_to_update=[
+            CustomFields(
+                key='CustomField1',
+                value='West Region'
+            ),
+            CustomFields(
+                key='CustomField2',
+                value='Distribution'
+            )
+        ],
+        devices=[
+            AccountDeviceList(
+                device_ids=[
+                    DeviceId(
+                        id=device_id,
+                        kind=device_kind
+                    )
+                ]
+            )
+        ]
+    )
+
+    try:
+        result = device_management_controller.update_devices_custom_fields(body)
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+
+# Route Connectivity example
+@app.route('/example', methods=['GET'])
+def example():
+    global client
+    data = {
+        "action": "Example API Call",
+    }
+    
+    client = _initialize_client()
+
+    try:
+        result = None
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
 
 
 # Function to save the token to a database
@@ -334,6 +395,44 @@ def _oauth_token_provider(last_oauth_token, auth_manager):
         last_oauth_token = auth_manager.fetch_token()
     
     return last_oauth_token
+
+# Function to fully initialize the client with the session token
+def _initialize_client():
+    global client, username, password
+    # Initialize the client
+    client = VerizonClient(
+        thingspace_oauth_credentials=ThingspaceOauthCredentials(
+            oauth_client_id=client_id,
+            oauth_client_secret=client_secret,
+        ),
+        environment=Environment.PRODUCTION
+    )
+    
+    session_management_controller = client.session_management
+    body = LogInRequest(
+        username= username,
+        password= password
+    )
+
+    sessionTokenResponse = session_management_controller.start_connectivity_management_session(
+        body=body
+    )
+
+    # Session token generation success
+    vzm2mToken = sessionTokenResponse.body.session_token 
+    
+    client = VerizonClient(
+        thingspace_oauth_credentials=ThingspaceOauthCredentials(
+            oauth_client_id=client_id,
+            oauth_client_secret=client_secret,
+        ),
+        vz_m2m_token_credentials=VZM2mTokenCredentials(
+            vz_m2m_token=vzm2mToken
+        ),
+        environment=Environment.PRODUCTION
+    )
+
+    return client
 
 if __name__ == '__main__':
     app.run(debug=True, port=8080)

@@ -41,11 +41,23 @@ Activate the virtual environment by running the following command:
 source venv/bin/activate
 ```
 
-
 ### Install the dependencies
 ```
 pip install -r requirements.txt
 ```
+
+### Set the environment variables
+Create a file called .env in the root of the project. Add the following environment variables:
+
+```
+CLIENT_ID=
+CLIENT_SECRET=
+UWS_USERNAME=
+UWS_PASSWORD=
+```
+
+For the workshop, I'll share my credentials with you via email, but in a real-world scenario, you would need to create an app in the Verizon Developer Platform and get your own credentials.
+
 ### Run the app
 ```
 python3 main.py
@@ -62,8 +74,11 @@ Use the Replit IDE to develop the app.
 * Go to https://replit.com/ and create an account.
 * Access this code as a [Replit project](https://replit.com/@sidmaestre/verizon-workshop-python-flask).
 * Fork the Replit project into your account.
-* Set the 4 environment variables in the Replit IDE. Go to the **Tools Panel** and click on **Secrets**.
+* Set the 4 environment variables in the Replit IDE. Go to the **All Tools Panel** and click on **Secrets**.
 * Add the following 4 environment variables: CLIENT_ID, CLIENT_SECRET, UWS_USERNAME, UWS_PASSWORD.
+* Run the project.
+
+You can access the app at the URL provided by Replit.
 
 ## License
 This project is licensed under the MIT License
