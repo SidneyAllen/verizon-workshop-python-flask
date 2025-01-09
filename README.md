@@ -1,7 +1,7 @@
 # Verizon Workshop Python Flask
 
 ## Introduction
-This is a simple Python Flask app that will be used to demonstrate how to use the [Verizon Developer Platform](https://developer.verizon.com/).
+This is a simple Python Flask app that will be used to demonstrate how to use the [Verizon Thingspace Developer Documentation](https://thingspace.verizon.com/documentation/api-documentation.html#/http/quick-start/introduction-to-the-verizon-api).
 
 ## Develop on Local machine
 ### Install Python

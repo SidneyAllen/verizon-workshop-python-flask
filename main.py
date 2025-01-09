@@ -7,6 +7,8 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify
 from verizon.models.custom_fields_update_request import CustomFieldsUpdateRequest
 from verizon.models.custom_fields import CustomFields
 from verizon.models.carrier_deactivate_request import CarrierDeactivateRequest
+from verizon.models.delete_devices_request import DeleteDevicesRequest
+from verizon.models.carrier_actions_request import CarrierActionsRequest
 from verizon.models.account_device_list_request import AccountDeviceListRequest
 from verizon.models.account_device_list_result import AccountDeviceListResult
 from verizon.models.account_details import AccountDetails
@@ -214,7 +216,7 @@ def end_session():
 def activate_device():
     global device_id, device_kind, service_plan, mdn_zip_code, account_name, sku_number
     data = {
-        "action": "Acitivate Device",
+        "action": "Activate Device",
     }
     
     client = _initialize_client()
@@ -244,17 +246,17 @@ def activate_device():
         # Below we print out the properties of the API response object
         print('-------------STATUS CODE--------------')
         print(result.status_code) #int
-        print("-----------------------------------")
+        print('-------------REASON PHRASE--------------')
         print(result.reason_phrase) #str
-        print("-----------------------------------")
+        print('-------------HEADERS--------------')
         print(vars(result.headers)) #dict
-        print("-----------------------------------")
+        print('-------------RESULT TEXT--------------')
         print(result.text) #str
-        print("-----------------------------------")
+        print('-------------RESULT BODY--------------')
         print(vars(result.body)) #object
-        print("-----------------------------------")
+        print('-------------ARRAY OF ERRORS--------------')
         print(result.errors) #Array of Strings
-        print("-----------------------------------")
+        print('-------------REQUEST OBJECT--------------')
         print(vars(result.request)) #object
 
         data["items"] = result.text
@@ -392,19 +394,47 @@ def deactivate_device():
 
     return render_template('index.html', data=data) 
 
-
-# Route Connectivity example
-@app.route('/example', methods=['GET'])
-def example():
+# Route Delete deactivated devices
+@app.route('/delete-deactivated-devices', methods=['GET'])
+def delete_deactivated_devices():
     global client
     data = {
-        "action": "Example API Call",
+        "action": "Delete Deactivated Devices",
     }
     
     client = _initialize_client()
+    device_management_controller = client.device_management
+    body = DeleteDevicesRequest(
+        devices_to_delete=[
+            AccountDeviceList(
+                device_ids=[
+                    DeviceId(
+                        id='09005470263',
+                        kind='esn'
+                    )
+                ]
+            ),
+            AccountDeviceList(
+                device_ids=[
+                    DeviceId(
+                        id='85000022411113460014',
+                        kind='iccid'
+                    )
+                ]
+            ),
+            AccountDeviceList(
+                device_ids=[
+                    DeviceId(
+                        id='85000022412313460016',
+                        kind='iccid'
+                    )
+                ]
+            )
+        ]
+    )
 
     try:
-        result = None
+        result = device_management_controller.delete_deactivated_devices(body)
         data["items"] = result.text
     except ConnectivityManagementResultException as e: 
         data["items"] = "Connectivity Management Exception! " + e.reason
@@ -413,6 +443,60 @@ def example():
 
     return render_template('index.html', data=data) 
 
+# Route suspend device
+@app.route('/suspend-device', methods=['GET'])
+def suspend_device():
+    global client, device_id, device_kind
+    data = {
+        "action": "Suspend device",
+    }
+    
+    client = _initialize_client()
+    device_management_controller = client.device_management
+    body = CarrierActionsRequest(
+        devices=[
+            AccountDeviceList(
+                device_ids=[
+                    DeviceId(
+                        id=device_id,
+                        kind=device_kind
+                    )
+                ]
+            )
+        ]
+    )
+
+    try:
+        result = device_management_controller.suspend_service_for_devices(body)
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+
+# Route to Restore Device
+@app.route('/restore-device', methods=['GET'])
+def restore_device():
+    global client
+    data = {
+        "action": "Restore Device",
+    }
+    
+    client = _initialize_client()
+
+    try:
+        ##result = None
+        ##data["items"] = result.text
+        data["items"] = "Not implemented"
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
 
 # Function to save the token to a database
 def _save_token_to_database(last_oauth_token):
