@@ -336,4 +336,4 @@ def _oauth_token_provider(last_oauth_token, auth_manager):
     return last_oauth_token
 
 if __name__ == '__main__':
-    app.run(debug=True, port=2222)
+    app.run(debug=True, port=8080)

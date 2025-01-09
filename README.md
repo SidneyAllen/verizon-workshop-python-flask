@@ -3,7 +3,7 @@
 ## Introduction
 This is a simple Python Flask app that will be used to demonstrate how to use the [Verizon Developer Platform](https://developer.verizon.com/).
 
-## Prerequisites
+## Develop on Local machine
 ### Install Python
 Python 3.10+ is the preferred version you can check your version by running
 ```
@@ -53,6 +53,17 @@ python3 main.py
 
 ### Access the app
 Open a web browser and navigate to http://127.0.0.1:2222/
+
+
+## Develop in Replit
+
+Use the Replit IDE to develop the app.
+
+* Go to https://replit.com/ and create an account.
+* Access this code as a [Replit project](https://replit.com/@sidmaestre/verizon-workshop-python-flask).
+* Fork the Replit project into your account.
+* Set the 4 environment variables in the Replit IDE. Go to the **Tools Panel** and click on **Secrets**.
+* Add the following 4 environment variables: CLIENT_ID, CLIENT_SECRET, UWS_USERNAME, UWS_PASSWORD.
 
 ## License
 This project is licensed under the MIT License
