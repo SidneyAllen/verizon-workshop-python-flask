@@ -51,7 +51,7 @@ Create a file called .env in the root of the project. Add the following environm
 
 ```
 VERIZON_CLIENT_ID="YOUR_CLIENT_ID"
-VERIZON_CLIENT_SECRET="YYOUR_CLIENT_SECRET"
+VERIZON_CLIENT_SECRET="YOUR_CLIENT_SECRET"
 UWS_USERNAME="YOUR_USERNAME"
 UWS_PASSWORD = "YOUR_PASSWORD"
 ```
@@ -64,7 +64,7 @@ python3 main.py
 ```
 
 ### Access the app
-Open a web browser and navigate to http://127.0.0.1:2222/
+Open a web browser and navigate to http://127.0.0.1:8080/
 
 
 ## Develop in Replit
