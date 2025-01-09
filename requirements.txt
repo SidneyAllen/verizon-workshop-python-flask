@@ -23,3 +23,4 @@ sdksio-verizon-apis-sdk==1.7.0
 six==1.16.0
 urllib3==2.2.3
 Werkzeug==3.0.6
+python-dotenv==1.0.1
