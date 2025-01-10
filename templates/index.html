@@ -29,17 +29,43 @@
       <p>
       <a href="/activate-device" class="btn btn-primary">Activate Device</a>
       <a href="/get-service-plans" class="btn btn-primary">Get Service Plans</a>
-      <a href="/get-device-info" class="btn btn-primary">Get Device Info</a>
       <a href="/update-device-custom-field" class="btn btn-primary">Update Device Custom Field</a>
       </p>
       <p>
       <a href="/deactivate-device" class="btn btn-primary">Deactivate Device</a>
       <a href="/delete-deactivated-devices" class="btn btn-primary">Delete Deactivated Devices</a>
       <a href="/suspend-device" class="btn btn-primary">Suspend Device</a>
-      <a href="/restore-device" class="btn btn-primary">Restore Device</a>
       </p>
     </div>
+  </div>
 
+  <div class="card mt-3">
+    <div class="card-header">
+      <h5>List Device Information:</h5>
+    </div>
+    <div class="card-body">
+      <p>
+        <a href="/get-device-list" class="btn btn-primary">Device List</a>
+        <a href="/get-device-list?type=mdn" class="btn btn-primary">Device MDN</a>
+        <a href="/get-device-list?type=imei" class="btn btn-primary">Device IMEI</a>
+        <a href="/get-device-list?type=iccid" class="btn btn-primary">Device ICCID</a>
+      </p>
+    </div>
+  </div>  
+
+  <div class="card mt-3">
+    <div class="card-header">
+      <h5>Not Implemented:</h5>
+    </div>
+    <div class="card-body">
+      <p>
+        <a href="/restore-device" class="btn btn-primary">Restore Device</a>   
+        <a href="/device-extended-diagnostic" class="btn btn-primary">Device Extended Diagnostic</a>
+        <a href="/device-connection-history" class="btn btn-primary">Device Connection History</a>
+        
+      </p>
+    </div>
+  </div>
 
   <div class="card mt-3">
     <div class="card-header">
@@ -48,10 +74,13 @@
     <div class="card-body">
       {% if data.items() != null %}
         {% for key, value in data.items() %}
-          {% if key != 'action' %}
+          {% if key != 'action' and key != 'link' %}
             <p><strong>{{ key.replace('_', ' ').title() }}:</strong> {{ value }}</p>
           {% endif %}
         {% endfor %}
+      {% endif %}
+      {% if 'link' in data %}
+        <a href="{{  data['link'] }}" target="_blank" class="btn btn-primary">Go to Docs</a>
       {% endif %}
     </div>
   </div>

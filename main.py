@@ -287,23 +287,45 @@ def get_service_plans():
         data["items"] = "API Exception! " + e.reason
     return render_template('index.html', data=data)
 
-
 # Route to list device info
-@app.route('/get-device-info', methods=['GET'])
-def get_device_info():
-    global client, device_id, device_kind
+@app.route('/get-device-list', methods=['GET'])
+def get_device_list():
+    global client, device_id, device_kind, account_name
     data = {
         "action": "List Device Information",
     }
 
+    type = request.args.get('type')
+  
+    if type == 'mdn':
+        body = AccountDeviceListRequest(
+            device_id=DeviceId(
+                id=device_id,
+                kind="mdn"
+            )
+        )
+    elif type == 'imei':
+        body = AccountDeviceListRequest(
+            device_id=DeviceId(
+                id="865284040050589",
+                kind="imei"
+            )
+        )
+    elif type == 'iccid':
+        body = AccountDeviceListRequest(
+            device_id=DeviceId(
+                id=device_id,
+                kind="iccid"
+            )
+        )
+    else:
+        body = AccountDeviceListRequest(
+            account_name=account_name,
+        )
+
     client = _initialize_client()
     device_management_controller = client.device_management
-    body = AccountDeviceListRequest(
-        device_id=DeviceId(
-            id=device_id,
-            kind=device_kind
-        )
-    )
+    
     try:
         result = device_management_controller.list_devices_information(body)
         data["items"] = result.text
@@ -477,6 +499,8 @@ def suspend_device():
     return render_template('index.html', data=data) 
 
 
+# NOT IMPPLEMENTED <<<<----------------------------
+
 # Route to Restore Device
 @app.route('/restore-device', methods=['GET'])
 def restore_device():
@@ -491,6 +515,51 @@ def restore_device():
         ##result = None
         ##data["items"] = result.text
         data["items"] = "Not implemented"
+        data["link"] = "https://thingspace.verizon.com/documentation/api-documentation.html#/http/connectivity-management/api-endpoints/device-management/restore-service-for-suspended-devices/restore-service-for-suspended-devices"
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+# Route to Device Extended Diagnostic
+@app.route('/device-extended-diagnostic', methods=['GET'])
+def device_extended_diagnostic():
+    global client
+    data = {
+        "action": "Device Extended Diagnostic ",
+    }
+    
+    client = _initialize_client()
+
+    try:
+        ##result = None
+        ##data["items"] = result.text
+        data["items"] = "Not implemented"
+        data["link"] = "https://thingspace.verizon.com/documentation/api-documentation.html#/http/connectivity-management/api-endpoints/device-management/get-device-extended-diagnostic-information/get-device-extended-diagnostic-information"
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+# Route to Device Connection History
+@app.route('/device-connection-history', methods=['GET'])
+def device_connection_history():
+    global client
+    data = {
+        "action": "Device Connection History",
+    }
+    
+    client = _initialize_client()
+
+    try:
+        ##result = None
+        ##data["items"] = result.text
+        data["items"] = "Not implemented"
+        data["link"] = "https://thingspace.verizon.com/documentation/api-documentation.html#/http/connectivity-management/api-endpoints/device-management/retrieve-device-connection-history/retrieve-device-connection-history" 
     except ConnectivityManagementResultException as e: 
         data["items"] = "Connectivity Management Exception! " + e.reason
     except APIException as e:
@@ -501,15 +570,16 @@ def restore_device():
 # Function to save the token to a database
 def _save_token_to_database(last_oauth_token):
     # Add the callback hander to perform operations like save to DB when token is updated
-    print("Save Token")
-    print(last_oauth_token)
+    print("---------------Update Token---------------")
+    print(vars(last_oauth_token))
 
 # Function to load the token from the database
 def _oauth_token_provider(last_oauth_token, auth_manager):
     # Add the callback handler to provide a new OAuth token
     # It will be triggered whenever the last provided o_auth_token is null or expired
-    print("Load Token")
-    print(last_oauth_token)
+    print("---------------Get Token---------------")
+    #print(auth_manager.fetch_token().access_token)
+    print(vars(auth_manager.fetch_token()))
 
     if last_oauth_token is None:
         last_oauth_token = auth_manager.fetch_token()
