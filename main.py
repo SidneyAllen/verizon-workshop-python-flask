@@ -22,6 +22,7 @@ from apimatic_core.exceptions.auth_validation_exception import AuthValidationExc
 from verizon.exceptions.api_exception import APIException
 from verizon.http.auth.thingspace_oauth import ThingspaceOauthCredentials
 from verizon.http.auth.vz_m2m_token import VZM2mTokenCredentials
+from verizon.models.oauth_scope_thingspace_oauth_enum import OauthScopeThingspaceOauthEnum
 from verizon.models.log_in_result import LogInResult
 from verizon.models.oauth_token import OauthToken
 from verizon.configuration import Environment
@@ -594,8 +595,13 @@ def _initialize_client():
         thingspace_oauth_credentials=ThingspaceOauthCredentials(
             oauth_client_id=client_id,
             oauth_client_secret=client_secret,
+            oauth_scopes=[
+                OauthScopeThingspaceOauthEnum.DISCOVERYREAD,
+                OauthScopeThingspaceOauthEnum.SERVICEPROFILEREAD
+            ]
         ),
         environment=Environment.PRODUCTION
+        #MOCK_SERVER_FOR_LIMITED_AVAILABILITY_SEE_QUICK_START
     )
     
     session_management_controller = client.session_management
