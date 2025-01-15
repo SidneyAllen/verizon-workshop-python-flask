@@ -2,6 +2,10 @@
 
 ## How to Setup Python SDK from Scratch
 
+Create a new python virtual environment and install the Verizon Python SDK.
+
+In your terminal (or replit), run the following commands:
+
 ### Create a new directory
 ```
 mkdir workshop
@@ -27,7 +31,7 @@ source venv/bin/activate
 pip install sdksio-verizon-apis-sdk==1.7.0
 ```
 
-### Open Project in VS Code
+### Open Project in VS Code (unless you are in Replit)
 ```
 code .
 ```
@@ -67,4 +71,12 @@ except ConnectivityManagementResultException as e:
     print(e)
 except APIException as e: 
     print(e)
+```
+
+### Set the following environment variables
+Client ID, Client Secret, Username, and Password
+
+## Run the program
+```
+python3 main.py
 ```
