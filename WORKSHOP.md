@@ -7,6 +7,11 @@
 mkdir workshop
 ```
 
+### Navigate to the new directory
+```
+cd workshop
+```
+
 ### Create new python virtual environment by running 
 ```
 python3 -m venv venv
