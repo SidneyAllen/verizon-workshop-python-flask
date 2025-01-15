@@ -66,6 +66,10 @@ def init_verizon_client():
         thingspace_oauth_credentials=ThingspaceOauthCredentials(
             oauth_client_id=client_id,
             oauth_client_secret=client_secret,
+            oauth_scopes=[
+                OauthScopeThingspaceOauthEnum.DISCOVERYREAD,
+                OauthScopeThingspaceOauthEnum.SERVICEPROFILEREAD
+            ],
             oauth_on_token_update=(lambda oauth_token:
                                 # Add the callback handler to perform operations like save to DB or file etc.
                                 # It will be triggered whenever the token gets updated
