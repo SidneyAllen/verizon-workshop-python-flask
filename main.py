@@ -594,11 +594,7 @@ def _initialize_client():
     client = VerizonClient(
         thingspace_oauth_credentials=ThingspaceOauthCredentials(
             oauth_client_id=client_id,
-            oauth_client_secret=client_secret,
-            oauth_scopes=[
-                OauthScopeThingspaceOauthEnum.DISCOVERYREAD,
-                OauthScopeThingspaceOauthEnum.SERVICEPROFILEREAD
-            ]
+            oauth_client_secret=client_secret
         ),
         environment=Environment.PRODUCTION
         #MOCK_SERVER_FOR_LIMITED_AVAILABILITY_SEE_QUICK_START
