@@ -13,6 +13,7 @@ from verizon.models.account_device_list_request import AccountDeviceListRequest
 from verizon.models.account_device_list_result import AccountDeviceListResult
 from verizon.models.account_details import AccountDetails
 from verizon.models.account_device_list import AccountDeviceList
+from verizon.models.register_callback_request import RegisterCallbackRequest
 from verizon.models.carrier_activate_request import CarrierActivateRequest
 from verizon.models.device_id import DeviceId
 from verizon.models.device_management_result import DeviceManagementResult
@@ -503,6 +504,90 @@ def suspend_device():
 
     return render_template('index.html', data=data) 
 
+# Route to List Register Callback
+@app.route('/list-register-callback', methods=['GET'])
+def list_register_callback():
+    global client, account_name
+    data = {
+        "action": "List Register Callback",
+    }
+    
+    client = _initialize_client()
+    connectivity_callbacks_controller = client.connectivity_callbacks
+    aname = account_name
+
+    try:
+        result = connectivity_callbacks_controller.list_registered_callbacks(aname)
+
+        data["items"] = result.text
+
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+# Route to Register Callback
+@app.route('/register-callback', methods=['GET'])
+def register_callback():
+    global client, account_name
+    data = {
+        "action": "Register Callback",
+    }
+    
+    client = _initialize_client()
+    connectivity_callbacks_controller = client.connectivity_callbacks
+    aname = account_name
+
+    body = RegisterCallbackRequest(
+        name='CarrierService',
+        url='https://mock.thingspace.verizon.com/webhook'
+    )
+
+    try:
+        result = connectivity_callbacks_controller.register_callback(
+            aname,
+            body
+        )
+        data["items"] = result.text
+
+    except ConnectivityManagementResultException as e: 
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
+
+# Route to Deregister Callback
+@app.route('/deregister-callback', methods=['GET'])
+def deregister_callback():
+    global client, account_name
+    data = {
+        "action": "Deregister Callback",
+    }
+    
+    client = _initialize_client()
+    connectivity_callbacks_controller = client.connectivity_callbacks
+    aname = account_name
+    sname = 'CarrierService'
+
+    try:
+        result = connectivity_callbacks_controller.deregister_callback(
+            aname,
+            sname
+        )
+        print(result)
+        data["items"] = result.text
+    except ConnectivityManagementResultException as e: 
+        print(e)
+        data["items"] = "Connectivity Management Exception! " + e.reason
+    except APIException as e:
+        data["items"] = "API Exception! " + e.reason
+
+    return render_template('index.html', data=data) 
+
 
 # NOT IMPPLEMENTED <<<<----------------------------
 
@@ -571,6 +656,8 @@ def device_connection_history():
         data["items"] = "API Exception! " + e.reason
 
     return render_template('index.html', data=data) 
+
+
 
 # Function to save the token to a database
 def _save_token_to_database(last_oauth_token):
